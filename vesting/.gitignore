@@ -1,0 +1,3 @@
+/vesting-contract/target/
+Cargo.lock
+/vesting-contract/test_snapshots/
