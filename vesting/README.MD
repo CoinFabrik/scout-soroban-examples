@@ -15,7 +15,7 @@ This folder contains the Soroban smart contract example for vesting, a digital a
 ### `pay_out`: transfers the vested funds to the beneficiary
 
 
-### Interacting with the Contract
+## Interacting with the Contract
 
 **Create a Vesting Schedule**. Create and define the vesting with its corresponding parameters: `new_vesting`
 
