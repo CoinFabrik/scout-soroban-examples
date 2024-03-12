@@ -18,8 +18,11 @@ This folder contains the Soroban smart contract example for vesting, a digital a
 ### Interacting with the Contract
 
 **Create a Vesting Schedule**. Create and define the vesting with its corresponding parameters: `new_vesting`
+
 **Add Funds**. Add the necessary funds to the vesting: `add_vest`
+
 **Check Balance**. In order to check the balance at the moment, the user can call:  `retrievable_balance`
+
 **Withdraw Balance**: Allows the user to withdraw their balance: `pay_out`
 
 ## Security Review
