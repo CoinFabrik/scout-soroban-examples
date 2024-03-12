@@ -6,24 +6,32 @@ This folder contains the Soroban smart contract example for vesting, a digital a
 
 ## Contract Functions
 
-### `new_vesting`: creates a new vesting schedule with specified parameters
+### `pub fn new_vesting(env: Env, token: Address, beneficiary: Address, start_time: u64, duration: u64, admin: Address) -> Result<u64, VestError>` 
 
-### `add_vest`: add funds to vesting
+creates a new vesting schedule with specified parameters
 
-### `retrievable_balance`: retrieves the balance that a user can currently withdraw from their vesting schedule
+### `pub fn add_vest(env: Env, id: u64, token: Address, from: Address, amount: i128) -> Result<i128, VestError>`
 
-### `pay_out`: transfers the vested funds to the beneficiary
+add funds to vesting
+
+### `pub fn retrievable_balance(env: Env, id: u64) -> Result<i128, VestError>`
+
+retrieves the balance that a user can currently withdraw from their vesting schedule
+
+### `pub fn pay_out(env: Env, id: u64) -> Result<i128, VestError>`
+
+transfers the vested funds to the beneficiary
 
 
 ## Interacting with the Contract
 
-**Create a Vesting Schedule**. Create and define the vesting with its corresponding parameters: `new_vesting`
+1. **Create a Vesting Schedule**. Create and define the vesting with its corresponding parameters: `new_vesting`
 
-**Add Funds**. Add the necessary funds to the vesting: `add_vest`
+2. **Add Funds**. Add the necessary funds to the vesting: `add_vest`
 
-**Check Balance**. In order to check the balance at the moment, the user can call:  `retrievable_balance`
+3. **Check Balance**. In order to check the balance at the moment, the user can call:  `retrievable_balance`
 
-**Withdraw Balance**: Allows the user to withdraw their balance: `pay_out`
+4. **Withdraw Balance**: Allows the user to withdraw their balance: `pay_out`
 
 ## Security Review
 
