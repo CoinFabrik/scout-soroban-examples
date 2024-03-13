@@ -22,13 +22,13 @@ This folder contains a Soroban smart contract example for a multisig. A multisig
 
 ## Interacting with the Contract
 
-1. **Submit_tx**. Submit a transaction using the function `submit_tx()`.
+1. **Submit Transaction**. Submit a transaction using the function `submit_tx()`.
    
-2. **Confirm_transaction**. Approve the transaction through the function `confirm_transaction()`. Each user can provide only one confirmation per transaction.
+2. **Confirm Transaction**. Approve the transaction through the function `confirm_transaction()`. Each user can provide only one confirmation per transaction.
 
-3. **Execute_transaction** . After the transaction has been generated and approved, use the `execute_transaction()` function to carry out the transaction.
+3. **Execute Transaction** . After the transaction has been generated and approved, use the `execute_transaction()` function to carry out the transaction.
    
-**Remove_owner / Add_owner**. If there is a need to delete or add an owner, both `remove_owner()` and `add_owner()` functions can be called. Signatures of the users are collected, and depending on the verdict, an owner is either removed or added.
+**Remove Owner or Add Owner**. If there is a need to delete or add an owner, both `remove_owner()` and `add_owner()` functions can be called. Signatures of the users are collected, and depending on the verdict, an owner is either removed or added.
 
 ## Security Review
 
