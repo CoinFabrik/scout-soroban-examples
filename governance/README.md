@@ -29,7 +29,7 @@ This function allows any member to resolve the vote in case it is finished. It c
 
 This function retrieves the current state of the governance system.
 
-### Interacting with the Contract
+## Interacting with the Contract
 
 1. **Setting Up**. To set up the governance contract with its corresponding configurations: `initialize`
 2. **Create a Proposal**. Create the transaction to make a proposal: `propose_tx`
