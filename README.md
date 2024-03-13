@@ -48,9 +48,9 @@ Validates the signature of a transaction to ensure its authenticity.
 
 3. **Closing the Payment Channel**: When the recipient wishes to close the channel and receive the remaining funds, they can do so using the close function, providing the desired amount and corresponding digital signature.
 
-4. **set_expiration**: The sender can set an expiration time for the channel using the set_expiration function if desired.
+ **set_expiration**: The sender can set an expiration time for the channel using the set_expiration function if desired.
 
-5. **claim_timeout**: If the channel has expired and the funds have not been claimed, the sender can claim the remaining funds using the claim_timeout function.
+ **claim_timeout**: If the channel has expired and the funds have not been claimed, the sender can claim the remaining funds using the claim_timeout function.
 
 ## Security Review
 
