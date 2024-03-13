@@ -42,15 +42,15 @@ Validates the signature of a transaction to ensure its authenticity.
 
 **Initialization of Payment Channel** : Using the initialize function, the user initializes a new payment channel by providing the required parameters, such as sender address, recipient address, close duration, and token address.
 
-**Making an Initial Payment**: The sender deposits funds into the payment channel by sending the desired amount to the contract. This can be done using a wallet compatible with the blockchain network used.
+1. **Making an Initial Payment**: The sender deposits funds into the payment channel by sending the desired amount to the contract. This can be done using a wallet compatible with the blockchain network used.
 
-**Partial Fund Withdrawal**: The recipient can make partial withdrawals of funds using the withdraw function, providing the desired amount and corresponding digital signature.
+2. **Partial Fund Withdrawal**: The recipient can make partial withdrawals of funds using the withdraw function, providing the desired amount and corresponding digital signature.
 
-**Closing the Payment Channel**: When the recipient wishes to close the channel and receive the remaining funds, they can do so using the close function, providing the desired amount and corresponding digital signature.
+3. **Closing the Payment Channel**: When the recipient wishes to close the channel and receive the remaining funds, they can do so using the close function, providing the desired amount and corresponding digital signature.
 
-**set_expiration**: The sender can set an expiration time for the channel using the set_expiration function if desired.
+4. **set_expiration**: The sender can set an expiration time for the channel using the set_expiration function if desired.
 
-**claim_timeout**: If the channel has expired and the funds have not been claimed, the sender can claim the remaining funds using the claim_timeout function.
+5. **claim_timeout**: If the channel has expired and the funds have not been claimed, the sender can claim the remaining funds using the claim_timeout function.
 
 ## Security Review
 
