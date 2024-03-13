@@ -38,13 +38,13 @@ Retrieves the current state of the multisig wallet.
 
 ## Interacting with the Contract
 
-1. **Submit_tx** . The function `submit_tx()` is called where the transaction is generated and the fields of token, caller, address, and amount are sent.
+1. **Submit_tx**. The function `submit_tx()` is called where the transaction is generated and the fields of token, caller, address, and amount are sent.
    
-2. **Confirm_transaction** . The transaction is approved by the users through the function `confirm_transaction()`. Each user can provide only one confirmation per transaction.
+2. **Confirm_transaction**. The transaction is approved by the users through the function `confirm_transaction()`. Each user can provide only one confirmation per transaction.
 
 3. **Execute_transaction** . After the transaction has been generated and approved, the `execute_transaction()` function carries out the transaction.
    
-**Remove_owner / Add_owner** . If there is a need to delete or add an owner, both `remove_owner()` and `add_owner()` functions can be called. Signatures of the users are collected, and depending on the verdict, an owner is either removed or added.
+**Remove_owner / Add_owner**. If there is a need to delete or add an owner, both `remove_owner()` and `add_owner()` functions can be called. Signatures of the users are collected, and depending on the verdict, an owner is either removed or added.
 
 ## Security Review
 
@@ -52,4 +52,3 @@ Retrieves the current state of the multisig wallet.
 
 ## About Soroban
 Learn more about Soroban and its features at [Soroban Documentation](https://soroban.stellar.org/docs/).
-soroban.stellar.orgsoroban.stellar.org
