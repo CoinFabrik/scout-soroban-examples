@@ -49,19 +49,19 @@ General steps for building and deploying Soroban smart contracts are as follows:
 
 ### Security Review Process
 
-All smart contracts featured in this repository will undergo (April 2024) an extensive security review conducted by senior auditors from CoinFabrik. This rigorous process ensures that each contract not only adheres to best practices in smart contract development but also is scrutinized for vulnerabilities, which are then corrected. A detailed security review report for each contract will be made publicly available, contributing to the transparency and educational value of this project.
+All smart contracts featured in this repository will undergo (April 2024) an extensive security review conducted by senior auditors from [CoinFabrik](https://www.coinfabrik.com/). This rigorous process ensures that each contract not only adheres to best practices in smart contract development but also is scrutinized for vulnerabilities, which are then corrected. A detailed security review report for each contract will be made publicly available, contributing to the transparency and educational value of this project.
 
 ## About Soroban
 
 [Soroban](https://soroban-lang.github.io/) is a domain-specific language designed for smart contract development on blockchain platforms. It's built on top of Rust, leveraging its power while providing abstractions and tools tailored specifically for smart contract development. Soroban simplifies the process of writing, testing, and deploying smart contracts, abstracting away complex blockchain interactions and ensuring correctness and security.
+
+Learn more about Soroban and its features at [Soroban Documentation](https://soroban.stellar.org/docs/).
 
 ## About CoinFabrik
 
 We - [CoinFabrik](https://www.coinfabrik.com/) - are a research and development company specialized in Web3, with a strong background in cybersecurity. Founded in 2014, we have worked on over 180 blockchain-related projects, EVM based and also for Solana, Algorand, and Polkadot. Beyond development, we offer security audits through a dedicated in-house team of senior cybersecurity professionals, currently working on code in Substrate, Solidity, Clarity, Rust, and TEAL.
 
 Our team has an academic background in computer science and mathematics, with work experience focused on cybersecurity and software development, including academic publications, patents turned into products, and conference presentations. Furthermore, we have an ongoing collaboration on knowledge transfer and open-source projects with the University of Buenos Aires.
-
-
 
 
 ## License
