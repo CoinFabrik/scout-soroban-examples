@@ -6,32 +6,18 @@ This folder contains a Soroban smart contract example for governance, where a me
 
 ## Contract Functions
 
-### `pub fn initialize(env: Env, supermajority: bool, supermajority_percentage: Option<u32>, voting_period: u64) -> GovernanceState` 
+| Function Name    | Parameters                                                                                                                       | Return Type          | Description                                                                                                                  |
+|------------------|----------------------------------------------------------------------------------------------------------------------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------|
+| `initialize`     | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>supermajority: bool</code></td></tr><tr><td><code>supermajority_percentage: Option&lt;u32&gt;</code></td></tr><tr><td><code>voting_period: u64</code></td></tr></tbody></table> | `GovernanceState` | Sets up the initial state of the governance contract, including supermajority settings and voting period.                    |
+| `propose_tx`     | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>contract_id: Address</code></td></tr><tr><td><code>func_name: Symbol</code></td></tr><tr><td><code>func_args: Vec&lt;Val&gt;</code></td></tr></tbody></table>                      | `None`             | Allows users to propose a transaction by specifying the target contract, function name, and arguments.                       |
+| `vote_proposal`  | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>voter: Address</code></td></tr><tr><td><code>proposal_id: u32</code></td></tr><tr><td><code>vote_value: bool</code></td></tr></tbody></table>                              | `None`             | Enables users to vote on proposals with a `yes` or `no` vote.                                                               |
+| `close_proposal` | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>proposal_id: u32</code></td></tr></tbody></table>                                                                    | `None`             | Resolves a vote, checking results and executing the transaction on the target contract if the vote passes the majority rule. |
+| `get_state`      | <table><tbody><tr><td><code>env: Env</code></td></tr></tbody></table>                                                                                        | `GovernanceState` | Retrieves the current state of the governance system.                                                                        |
 
-This function sets up the initial state of the governance contract, including supermajority settings, voting period, and creates an empty `GovernanceState` object.
-
-### `pub fn propose_tx(env: Env, contract_id: Address, func_name: Symbol, func_args: Vec<Val>)`
-
-This function allows users to propose a transaction. It takes the target contract address, function name, arguments, and creates a proposal with an expiration date. 
-
-### `pub fn vote_proposal(env: Env, voter: Address, proposal_id: u32, vote_value: bool)`
-
-This function allows users to vote on a specific proposal with a `yes` or `no` vote. 
-_It is important to mention that this contract does not put limitations on who can vote, this varies according to the group where the vote is executed._
-
-### `pub fn close_proposal(env: Env, proposal_id: u32)`
-
-This function allows any member to resolve the vote in case it is finished. It checks the voting results and executes the proposed transaction on the target contract if the vote passes based on the supermajority setting:
-- **Supermajority**: If supermajority is enabled, a specified percentage of the total votes (defined by `supermajority_percentage`) must be in favor for approval.
-- **Simple Majority**: If supermajority is disabled, a simple majority (more yes votes than no votes) is sufficient for approval.
-
-### `pub fn get_state(env: Env) -> GovernanceState`
-
-This function retrieves the current state of the governance system.
 
 ## Interacting with the Contract
 
-1. **Setting Up**. To set up the governance contract with its corresponding configurations: `initialize`
+1. **Setting Up**. Use the `initialize` function to set up the governance contract with its corresponding configurations.
 2. **Create a Proposal**. Create the transaction to make a proposal using the function `propose_tx()`.
 3. **Vote**. Vote yes or no on the generated proposal using the function `vote_proposal()`.
 4. **Resolve Proposal**. If the proposal is already finished, resolve it using the function ` close_proposal()`.
@@ -39,8 +25,5 @@ This function retrieves the current state of the governance system.
 
 ## Security Review
 
-**This Smart Contract is pending to be audited in April 2024.** Use at your own risk. Contributions and bug reports are welcome to enhance the security and functionality of this contract.
+> :warning: **This Smart Contract is pending to be audited in April 2024.** Use at your own risk. Contributions and bug reports are welcome to enhance the security and functionality of this contract.
 
-## About Soroban
-
-Learn more about Soroban and its features at [Soroban Documentation](https://soroban.stellar.org/docs/).
