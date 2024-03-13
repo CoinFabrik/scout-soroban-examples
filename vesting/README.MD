@@ -1,4 +1,4 @@
-# Vesting Soroban Smart Contract
+# Vesting
 
 ## Overview
 
