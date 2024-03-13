@@ -35,9 +35,10 @@ These are the functions found in Storage contract, which only modify and access 
 1. **Initializes The State**. Sets up the CallerContract for the first time by assigning locations for its data and linking it to the adder and subber contracts: `init`
 
 2. **Change The State**. Change the value of the which flag in the contract's state: `flip`
-## Security Review
 
 3.**Change Storage**. Retrieves the current state and then calls the `do_it` function on either the adder or subber contract (based on the flag): `variable_do_it`
+
+## Security Review
 
 ![Security Audit Pending](https://example.com/security-audit-pending-banner.png)
 
