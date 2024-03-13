@@ -12,7 +12,7 @@ Creates a new vesting schedule with specified parameters.
 
 ### `pub fn add_vest(env: Env, id: u64, token: Address, from: Address, amount: i128) -> Result<i128, VestError>`
 
-Add funds to vesting.
+Add funds to the vesting account.
 
 ### `pub fn retrievable_balance(env: Env, id: u64) -> Result<i128, VestError>`
 
@@ -27,16 +27,13 @@ Transfers the vested funds to the beneficiary.
 
 1. **Create a Vesting Schedule**. To create and define the vesting with its corresponding parameters use the function `new_vesting()`.
 
-2. **Add Funds**. To add the necessary funds to the vesting use `add_vest()`
+2. **Add Funds**. To add the necessary funds to the vesting use `add_vest()`.
 
-3. **Check Balance**. In order to check the balance at the moment, call `retrievable_balance()`.
+3. **Check Balance**. In order to check the balance at the moment for a particular user, call `retrievable_balance()`.
 
-4. **Withdraw Balance**: For the user to withdraw the balance use `pay_out()`.
+4. **Withdraw Balance**: For the user to withdraw balance use `pay_out()`.
 
 ## Security Review
 
-**This Smart Contract is pending to be audited in April 2024.** Use at your own risk. Contributions and bug reports are welcome to enhance the security and functionality of this contract.
+> :warning: **This Smart Contract is pending to be audited in April 2024.** Use at your own risk. Contributions and bug reports are welcome to enhance the security and functionality of this contract.
 
-## About Soroban
-
-Learn more about Soroban and its features at [Soroban Documentation](https://soroban.stellar.org/docs/).
