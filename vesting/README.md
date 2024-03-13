@@ -2,30 +2,21 @@
 
 ## Overview
 
-This folder contains a Soroban smart contract example for vesting, a digital agreement that governs the gradual transfer of ownership rights, typically for assets like company stock or crypto tokens. It demonstrates defining, adding, and withdrawing vesting schedules, showcasing how to implement and interact with smart contracts on the Stellar network using Soroban.
+This folder contains a Soroban smart contract example for a vesting schedule, a digital agreement that governs the gradual transfer of ownership rights, typically for assets like company stock or crypto tokens. It demonstrates defining, adding, and withdrawing vesting schedules, showcasing how to implement and interact with smart contracts on the Stellar network using Soroban.
 
 ## Contract Functions
 
-### `pub fn new_vesting(env: Env, token: Address, beneficiary: Address, start_time: u64, duration: u64, admin: Address) -> Result<u64, VestError>` 
-
-Creates a new vesting schedule with specified parameters.
-
-### `pub fn add_vest(env: Env, id: u64, token: Address, from: Address, amount: i128) -> Result<i128, VestError>`
-
-Add funds to the vesting account.
-
-### `pub fn retrievable_balance(env: Env, id: u64) -> Result<i128, VestError>`
-
-Retrieves the balance that a user can currently withdraw from their vesting schedule.
-
-### `pub fn pay_out(env: Env, id: u64) -> Result<i128, VestError>`
-
-Transfers the vested funds to the beneficiary.
+| Function Name         | Parameters                                                                                       | Return Type              | Description                                                                  |
+|-----------------------|--------------------------------------------------------------------------------------------------|--------------------------|------------------------------------------------------------------------------|
+| `new_vesting`         | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>token: Address</code></td></tr><tr><td><code>beneficiary: Address</code></td></tr><tr><td><code>start_time: u64</code></td></tr><tr><td><code>duration: u64</code></td></tr><tr><td><code>admin: Address</code></td></tr></tbody></table> | `Result<u64, VestError>` | Initializes a new vesting schedule with specific parameters.                 |
+| `add_vest`            | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>id: u64</code></td></tr><tr><td><code>token: Address</code></td></tr><tr><td><code>from: Address</code></td></tr><tr><td><code>amount: i128</code></td></tr></tbody></table>                               | `Result<i128, VestError>`| Adds funds to a specified vesting account.                                   |
+| `retrievable_balance` | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>id: u64</code></td></tr></tbody></table>                                                                             | `Result<i128, VestError>`| Retrieves the balance that is currently withdrawable from the vesting account. |
+| `pay_out`             | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>id: u64</code></td></tr></tbody></table>                                                                             | `Result<i128, VestError>`| Transfers the available vested funds to the beneficiary's account.           |
 
 
 ## Interacting with the Contract
 
-1. **Create a Vesting Schedule**. To create and define the vesting with its corresponding parameters use the function `new_vesting()`.
+1. **Create a Vesting Schedule**. To create and define the vesting schedule with its corresponding parameters use the function `new_vesting()`.
 
 2. **Add Funds**. To add the necessary funds to the vesting use `add_vest()`.
 
