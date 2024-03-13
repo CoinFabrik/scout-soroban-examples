@@ -36,7 +36,7 @@ These are the functions found in Storage contract, which only modify and access 
 
 2. **Change The State**. Change the value of the which flag in the contract's state: `flip`
 
-3.**Change Storage**. Retrieves the current state and then calls the `do_it` function on either the adder or subber contract (based on the flag): `variable_do_it`
+3. **Change Storage**. Retrieves the current state and then calls the `do_it` function on either the adder or subber contract (based on the flag): `variable_do_it`
 
 ## Security Review
 
