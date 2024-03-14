@@ -8,14 +8,14 @@ This folder contains a Soroban smart contract example for a payment channel. A p
 
 | Function Name            | Parameters                                                                                                               | Return Type                | Description                                                                                              |
 |--------------------------|--------------------------------------------------------------------------------------------------------------------------|----------------------------|----------------------------------------------------------------------------------------------------------|
-| `initialize`             | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>sender: Address</code></td></tr><tr><td><code>recipient: Address</code></td></tr><tr><td><code>close_duration: i128</code></td></tr><tr><td><code>token: Address</code></td></tr></tbody></table> | `PaymentChannelState` | Initializes a new payment channel with provided parameters.                                             |
-| `close`                  | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>amount: i128</code></td></tr><tr><td><code>signature: BytesN&lt;64&gt;</code></td></tr></tbody></table>                                        | `None`                   | Allows the recipient to close the channel and withdraw funds.                                           |
+| `initialize`             | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>sender: Address</code></td></tr><tr><td><code>recipient: Address</code></td></tr><tr><td><code>close_duration: i128</code></td></tr><tr><td><code>token: Address</code></td></tr><tr><td><code>allowance: i128</code></td></tr></tbody></table> | `PaymentChannelState` | Initializes a new payment channel with provided parameters.                                             |
+| `close`                  | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>amount: i128</code></td></tr><tr><td><code>signature: BytesN&lt;64&gt;</code></td></tr></tbody></table>                                        | `None`                   | Allows the recipient to close the channel and withdraw funds. Unclaimed funds will go back to the sender.                                           |
 | `withdraw`               | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>amount: i128</code></td></tr><tr><td><code>signature: BytesN&lt;64&gt;</code></td></tr></tbody></table>                                        | `None`                   | Allows the recipient to withdraw funds incrementally from the channel.                                  |
 | `set_expiration`         | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>timestamp: i128</code></td></tr></tbody></table>                                                               | `None`                   | Sets the expiration timestamp of the channel.                                                            |
 | `claim_timeout`          | <table><tbody><tr><td><code>env: Env</code></td></tr></tbody></table>                                                                                | `Result<(), PCError>`    | Allows the sender to claim funds if the channel has expired.                                            |
 | `get_recipient_address`  | <table><tbody><tr><td><code>env: Env</code></td></tr></tbody></table>                                                                                | `Address`                | Retrieves the recipient's address associated with the payment channel.                                  |
 | `get_sender_address`     | <table><tbody><tr><td><code>env: Env</code></td></tr></tbody></table>                                                                                | `Address`                | Retrieves the sender's address associated with the payment channel.                                     |
-| `verify_signature`       | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>amount: i128</code></td></tr><tr><td><code>signature: BytesN&lt;64&gt;</code></td></tr><tr><td><code>sender_pubkey: Address</code></td></tr></tbody></table> | `None`                   | Validates the signature of a transaction to ensure its authenticity.                                    |
+| `modify_allowance`       | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>amount: i128</code></td></tr></tbody></table> | `None`                   | Allows the sender to modify the permitted maximum amount to be withdrawn by the recipient (considering the sum of all partial extractions).                                    |
 
 
 ## Interacting with the Contract
@@ -24,9 +24,9 @@ This folder contains a Soroban smart contract example for a payment channel. A p
 
 2. **Making an Initial Payment**: Deposit funds into the payment channel by sending the desired amount to the contract.
 
-3. **Partial Fund Withdrawal**: Make partial withdrawals of funds using the withdraw function, providing the desired amount and corresponding digital signature.
+3. **Partial Fund Withdrawal**: Make partial withdrawals of funds using the withdraw function.
 
-4. **Closing the Payment Channel**: Close the channel and receive the remaining funds using the `close()` function and providing the desired amount and corresponding digital signature.
+4. **Closing the Payment Channel**: Close the channel and receive the remaining funds using the `close()` function and providing the desired amount.
 
  **Set Expiration**: The sender can set an expiration time for the channel using the `set_expiration()` function if desired.
 
