@@ -23,9 +23,20 @@ To modify or interact with the smart contracts within, ensure your development e
 1. **Install Soroban CLI and Rust SDK**: Follow the setup instructions provided in the [Soroban documentation](https://soroban.stellar.org/docs/getting-started/setup).
 2. **Install Docker**: Refer to the [Docker installation guide](https://docs.docker.com/get-docker/).
 
-### Building, Deploying and Testing Contracts
+### Building and Testing Contracts
 
-General steps for building and deploying Soroban smart contracts in a local node are as follows:
+General steps for building and testing contracts:
+
+1. **Build the Contract**: Compile the smart contract to a WASM file.
+
+	```console
+	soroban contract build
+	```
+2. **Test de Contract**: [COMPLETE]
+
+### Deploying on Local Node
+
+For deploying Soroban smart contracts on a local node follow these steps:
 
 1. **Configure Soroban Network**: Set up your connection to the Soroban standalone network.
 
@@ -35,13 +46,7 @@ General steps for building and deploying Soroban smart contracts in a local node
    	--network-passphrase "Standalone Network ; February 2017"
 	```
 
-2. **Build the Contract**: Compile the smart contract to a WASM file.
-
-	```console
-	soroban contract build
-	```
-
-3. **Deploy the Contract**: Deploy the compiled contract to your chosen network.
+2. **Deploy the Contract**: Deploy the compiled contract to your chosen network.
 
 	```console
 	soroban contract deploy --wasm [path_to_wasm_file] --source [your_username] --network standalone
