@@ -20,8 +20,13 @@ This folder contains a Soroban smart contract example for governance, where a me
 1. **Setting Up**. Use the `initialize` function to set up the governance contract with its corresponding configurations.
 2. **Create a Proposal**. Create the transaction to make a proposal using the function `propose_tx()`.
 3. **Vote**. Vote yes or no on the generated proposal using the function `vote_proposal()`.
-4. **Resolve Proposal**. If the proposal is already finished, resolve it using the function ` close_proposal()`.
+4. **Resolve Proposal**. If the proposal voting period has already finished, resolve it using the function ` close_proposal()`.
 
+## Other considerations 
+
+- Current Governance example allows proposals with **one transaction only**.
+- Current Governance example does not verify members belong to a specific community and must be customized to do it (either by owning a *governance token* or other possible criteria).
+- Governance is intended to have authority over other contracts inside a system.
 
 ## Security Review
 
