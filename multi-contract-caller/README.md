@@ -27,6 +27,10 @@ Deploy the four smart contracts.
 
 3. **Change Storage**. Use the function `variable_do_it()` to retrieve the current state and call the `do_it()` function on either the adder or subber contract (based on the flag).
 
+## Running tests
+
+To run the unit tests first go into each contract's directory and build the contract with `soroban contract build`. Then run the tests with `cargo test` in each directory. `full_test.sh` is provided for convenience, which executes the build and test steps in a correct order.
+
 ## Security Review
 
 > :warning: **This Smart Contract is pending to be audited in April 2024.** Use at your own risk. Contributions and bug reports are welcome to enhance the security and functionality of this contract.
