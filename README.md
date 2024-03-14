@@ -1,18 +1,15 @@
 # Scout Soroban Smart Contract Examples
 
+![https://img.shields.io/badge/license-MIT-green](https://img.shields.io/badge/license-MIT-green)
+
+
 ## Project Overview
 
-Welcome to the Scout Soroban Smart Contract Examples repository. This project is dedicated to advancing the development, security, and understanding of smart contracts on the Stellar network through the Soroban smart contract language. Our aim is to create a set of real-life, security-reviewed Soroban smart contracts that not only serve as robust development templates but also help identify and document good and bad practices in smart contract development. Furthermore, this initiative is designed to uncover new vulnerabilities, significantly contributing to the improvement of the Scout tool for Soroban.
+Welcome to the Scout Soroban Smart Contract Examples repository. This project is dedicated to advancing the development, security, and understanding of smart contracts on the Stellar network through the [Soroban smart contract language](https://soroban.stellar.org/docs). 
 
-By engaging developers with varying levels of experience in a time-constrained environment, we intentionally mimic real-world conditions under which smart contracts are developed. These contracts are subsequently reviewed by senior security auditors and analyzed using the Scout for Soroban tool to identify and rectify any security issues, ensuring a comprehensive security review process.
+Our aim is to create a set of real-life, security-reviewed Soroban smart contracts that not only serve as robust development templates but also help identify and document good and bad practices in smart contract development. This initiative is designed to uncover new vulnerabilities, significantly contributing to the improvement of the [Scout](https://github.com/CoinFabrik/scout-soroban) tool for Soroban.
 
-### Project Objectives
-
-The project is structured around several key objectives:
-
-1. **To enhance the Scout Soroban Tool** by using these contracts as real-world test cases, thereby refining the tool’s capabilities in vulnerability detection and prevention.
-2. **To explore complex vulnerabilities** not covered in the proof of concept (PoC) and prototype phases, facilitating the development of new vulnerability classes, test cases, and detectors.
-3. **To use the security findings** from the review process to further refine and improve the Scout tool, contributing to safer and more secure Soroban smart contract development.
+By engaging developers with varying levels of experience in a time-constrained environment, we intentionally mimic real-world conditions under which smart contracts are developed. Our contracts are analyzed using [Scout](https://github.com/CoinFabrik/scout-soroban) and reviewed by senior security auditors to identify and rectify any undetected security issues, ensuring a comprehensive security review process.
 
 ## Getting Started
 
