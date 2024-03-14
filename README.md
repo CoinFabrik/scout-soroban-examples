@@ -10,7 +10,7 @@
 
 Welcome to the Scout Soroban Smart Contract Examples repository. This project is dedicated to advancing the development, security, and understanding of smart contracts on the Stellar network through the [Soroban smart contract language](https://soroban.stellar.org/docs). 
 
-Our aim is to create a set of real-life, security-reviewed Soroban smart contracts that not only serve as robust development templates but also help identify and document good and bad practices in smart contract development. This initiative is designed to uncover new vulnerabilities, significantly contributing to the improvement of the [Scout](https://github.com/CoinFabrik/scout-soroban) our open-source vulnerability detector for Soroban.
+Our aim is to create a set of real-life, security-reviewed Soroban smart contracts that not only serve as robust development templates but also help identify and document good and bad practices in smart contract development. This initiative is designed to uncover new vulnerabilities, contributing to the improvement of our open-source vulnerability detector tool for Soroban, [Scout](https://github.com/CoinFabrik/scout-soroban).
 
 By engaging developers with varying levels of experience in a time-constrained environment, we intentionally mimic real-world conditions under which smart contracts are developed. Our contracts are analyzed using [Scout](https://github.com/CoinFabrik/scout-soroban) and reviewed by senior security auditors to identify and rectify any undetected security issues, ensuring a comprehensive security review process.
 
@@ -60,7 +60,7 @@ For deploying Soroban smart contracts on a local node follow these steps:
    	--rpc-url "http://localhost:8000/soroban/rpc" \
    	--network-passphrase "Standalone Network ; February 2017"
 	```
-3. **Create Identities**: Generate the necessary identities.
+3. **Create Identities**: Generate the necessary identities (eg: `alice`, `bob`).
 
 	```console
 	soroban config identity generate --global [name]
@@ -117,7 +117,7 @@ All smart contracts featured in this repository will undergo an extensive securi
 
 ## About Soroban
 
-[Soroban](https://soroban-lang.github.io/) is a domain-specific language designed for smart contract development on blockchain platforms. It's built on top of Rust, leveraging its power while providing abstractions and tools tailored specifically for smart contract development. Soroban simplifies the process of writing, testing, and deploying smart contracts, abstracting away complex blockchain interactions and ensuring correctness and security.
+[Soroban](https://soroban-lang.github.io/) is a domain-specific language designed for smart contract development on [Stellar]((https://stellar.org/). It's built on top of Rust, leveraging its power while providing abstractions and tools tailored specifically for smart contract development. 
 
 Learn more about Soroban and its features at [Soroban Documentation](https://soroban.stellar.org/docs/).
 
