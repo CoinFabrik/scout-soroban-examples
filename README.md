@@ -2,6 +2,9 @@
 
 ![https://img.shields.io/badge/license-MIT-green](https://img.shields.io/badge/license-MIT-green)
 
+<p align="center">
+  <img src="banner.jpg" alt="Scout in a Dark Forest" center  />
+</p>
 
 ## Project Overview
 
