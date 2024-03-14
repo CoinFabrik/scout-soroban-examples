@@ -17,7 +17,9 @@ This folder contains a Soroban smart contract example for a multi contract calle
 | `storage`      | `set`            | <table><tbody><tr><td><code>env: Env</code></td></tr><tr><td><code>value: i64</code></td></tr></tbody></table>  | `None`                    | Modifies a value in the `storage` contract.                                                                                  |
 
 
-## Interacting with the Contract
+## Interacting with the Contracts
+
+Deploy the four smart contracts.
 
 1. **Initialize State**. Set up the `caller` for the first time with the `init()` function, by assigning locations for its data (`storage` contract) and linking it to the `adder` and `subber` contracts.
 
