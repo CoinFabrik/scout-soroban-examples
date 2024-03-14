@@ -82,7 +82,7 @@ For deploying Soroban smart contracts on a local node follow these steps:
  	CONTRACT=[address]
  	```
 
-### In case you need to use a token, follow these instructions:
+#### In case you need to use a token, follow these instructions:
 
 1. **Wrap the Native Token**: To be able to use tokens in contract calls, we'll need to obtain an address.
 
@@ -96,13 +96,13 @@ For deploying Soroban smart contracts on a local node follow these steps:
  	TOKEN=[returned address]
  	```
 
- 2. **Check Balances**: To check the balance of an identitie:
+ 2. **Check Balances**: To check the balance of an identity:
 
  	```console
 	soroban contract invoke --id $TOKEN --source [name] --network standalone -- balance --id [name]
 	```
 
-3. **Token Usage**: Now you can pass token as a parameter to contract calls.
+3. **Token Usage**: Now you can pass a token as a parameter to contract calls.
   
    	```console
 	soroban contract invoke --id $CONTRACT --source [name] --network standalone -- [function_name] --token $TOKEN
