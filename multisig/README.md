@@ -2,7 +2,7 @@
 
 ## Overview
 
-This folder contains a Soroban smart contract example for a multisig. A multisig is a digital signature scheme that allows multiple individuals or entities to jointly authorize transactions or actions. It adds an extra layer of security and control to digital assets, such as cryptocurrencies or digital contracts.
+This folder contains a Soroban smart contract example for a multisig. A multisig is a digital signature scheme that allows multiple individuals or entities to jointly authorize transactions. It adds an extra layer of security and control to digital assets, such as cryptocurrencies or digital contracts.
 
 ## Contract Functions
 
@@ -28,7 +28,7 @@ This folder contains a Soroban smart contract example for a multisig. A multisig
 
 3. **Execute Transaction** . After the transaction has been generated and approved, use the `execute_transaction()` function to carry out the transaction.
    
-**Remove Owner or Add Owner**. If there is a need to delete or add an owner, both `remove_owner()` and `add_owner()` functions can be called. Signatures of the users are collected, and depending on the verdict, an owner is either removed or added.
+**Remove Owner or Add Owner**. Whenever there is the need to add or remove an owner, current members should vote on it by calling `approve_owner_adittion` or `approve_owner_removal`. Every time a member invokes one of these functions, a verification will be done to check whether the removal or the addition has reached the minimum amount of signatures required to be executed. If the required confirmations have been, indeed, reached these functions will take care of calling the internal methods `add_owner` or `remove_owner` respectively. 
 
 ## Security Review
 
