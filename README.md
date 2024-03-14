@@ -10,7 +10,7 @@
 
 Welcome to the Scout Soroban Smart Contract Examples repository. This project is dedicated to advancing the development, security, and understanding of smart contracts on the Stellar network through the [Soroban smart contract language](https://soroban.stellar.org/docs). 
 
-Our aim is to create a set of real-life, security-reviewed Soroban smart contracts that not only serve as robust development templates but also help identify and document good and bad practices in smart contract development. This initiative is designed to uncover new vulnerabilities, significantly contributing to the improvement of the [Scout](https://github.com/CoinFabrik/scout-soroban) tool for Soroban.
+Our aim is to create a set of real-life, security-reviewed Soroban smart contracts that not only serve as robust development templates but also help identify and document good and bad practices in smart contract development. This initiative is designed to uncover new vulnerabilities, significantly contributing to the improvement of the [Scout](https://github.com/CoinFabrik/scout-soroban) our open-source vulnerability detector for Soroban.
 
 By engaging developers with varying levels of experience in a time-constrained environment, we intentionally mimic real-world conditions under which smart contracts are developed. Our contracts are analyzed using [Scout](https://github.com/CoinFabrik/scout-soroban) and reviewed by senior security auditors to identify and rectify any undetected security issues, ensuring a comprehensive security review process.
 
