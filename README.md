@@ -18,14 +18,14 @@ The project is structured around several key objectives:
 
 ### Initial Environment Setup
 
-To participate in this project or utilize the smart contracts within, ensure your development environment is set up as follows:
+To modify or interact with the smart contracts within, ensure your development environment is set up as follows:
 
-1. **Install Docker**: Refer to the [Docker installation guide](https://docs.docker.com/get-docker/).
-2. **Install Soroban CLI and Rust SDK**: Follow the setup instructions provided in the [Soroban documentation](https://soroban.stellar.org/docs/getting-started/setup).
+1. **Install Soroban CLI and Rust SDK**: Follow the setup instructions provided in the [Soroban documentation](https://soroban.stellar.org/docs/getting-started/setup).
+2. **Install Docker**: Refer to the [Docker installation guide](https://docs.docker.com/get-docker/).
 
 ### Building, Deploying and Testing Contracts
 
-General steps for building and deploying Soroban smart contracts are as follows:
+General steps for building and deploying Soroban smart contracts in a local node are as follows:
 
 1. **Configure Soroban Network**: Set up your connection to the Soroban standalone network.
 
@@ -49,7 +49,7 @@ General steps for building and deploying Soroban smart contracts are as follows:
 
 ### Security Review Process
 
-All smart contracts featured in this repository will undergo (April 2024) an extensive security review conducted by senior auditors from [CoinFabrik](https://www.coinfabrik.com/). This rigorous process ensures that each contract not only adheres to best practices in smart contract development but also is scrutinized for vulnerabilities, which are then corrected. A detailed security review report for each contract will be made publicly available, contributing to the transparency and educational value of this project.
+All smart contracts featured in this repository will undergo an extensive security review conducted by senior auditors from [CoinFabrik](https://www.coinfabrik.com/) in April 2024. This  process ensures that each contract not only adheres to best practices in smart contract development but also is scrutinized for vulnerabilities, which are then corrected. A detailed security review report for each contract will be made publicly available, contributing to the transparency and educational value of this project.
 
 ## About Soroban
 
