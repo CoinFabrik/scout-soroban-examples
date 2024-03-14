@@ -32,24 +32,83 @@ General steps for building and testing contracts:
 	```console
 	soroban contract build
 	```
-2. **Test de Contract**: [COMPLETE]
-
+2. **Test the Contract**: Compile and run all the tests.
+   
+	```console
+	cargo test
+	```
+ 
 ### Deploying on Local Node
 
 For deploying Soroban smart contracts on a local node follow these steps:
 
-1. **Configure Soroban Network**: Set up your connection to the Soroban standalone network.
+1. **Execute Standalone Network**: Run a local standalone network with the Stellar Quickstart Docker image.
+
+	```console
+	docker run --rm -it \
+	-p 8000:8000 \
+	--name stellar \
+	stellar/quickstart:testing \
+	--standalone \
+	--enable-soroban-rpc
+	```
+
+2. **Configure Soroban Network**: Set up your connection to the Soroban standalone network.
 
 	```console
 	soroban config network add standalone \
    	--rpc-url "http://localhost:8000/soroban/rpc" \
    	--network-passphrase "Standalone Network ; February 2017"
 	```
-
-2. **Deploy the Contract**: Deploy the compiled contract to your chosen network.
+3. **Create Identities**: Generate the necessary identities.
 
 	```console
-	soroban contract deploy --wasm [path_to_wasm_file] --source [your_username] --network standalone
+	soroban config identity generate --global [name]
+	```
+4. **Fund Identities**: Fund identities so they can be used as accounts for contract calls.
+
+ 	```console
+  	soroban config identity fund [name] --network standalone
+  	```
+
+5. **Deploy the Contract**: Deploy the compiled contract to your chosen network.
+
+	```console
+	soroban contract deploy --wasm [path_to_wasm_file] --source [name] --network standalone
+	```
+
+ 	_Deploying the contract will output the contract's address. For example: 						`CBB7KJK37V26SL3BGPMFPU3LT2QH53VQ4KVQCR6LJSSA3FALMA2OHMR2`_
+
+	_For convenience, save it to an environment variable_
+
+	```console
+ 	CONTRACT=[address]
+ 	```
+
+### In case you need to use a token, follow these instructions:
+
+1. **Wrap the Native Token**: To be able to use tokens in contract calls, we'll need to obtain an address.
+
+   	```console
+	soroban lab token wrap --asset native --network standalone --source [name]
+	```
+    
+   	_For convenience, save it to an environment variable_
+
+	```console
+ 	TOKEN=[returned address]
+ 	```
+
+ 2. **Check Balances**: To check the balance of an identitie:
+
+ 	```console
+	soroban contract invoke --id $TOKEN --source [name] --network standalone -- balance --id [name]
+	```
+
+3. **Token Usage**: Now you can pass token as a parameter to contract calls.
+  
+   	```console
+	soroban contract invoke --id $CONTRACT --source [name] --network standalone -- [function_name] --token $TOKEN
 	```
 
 ### Security Review Process
