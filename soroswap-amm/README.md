@@ -25,7 +25,7 @@ _It is important to mention that inside the folder you will find the soroban exa
 
 3. **Add liquidity**. In order to add liquidity, deposit tokens with the function `deposit()`.
 
-4. **Swap Tokens**: For the user to swap his tokens use `swap()`.
+4. **Swap Tokens**. For the user to swap his tokens use `swap()`.
 
 ## Security Review
 
