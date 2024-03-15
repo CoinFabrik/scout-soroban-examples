@@ -23,7 +23,7 @@ _It is important to mention that inside the folder you will find the soroban exa
 
 2. **Create Swap**. To create a new swap with a token pair use `new_swap()`.
 
-3. **Add liquidity **. In order to add liquidity, deposit tokens with the function `deposit()`.
+3. **Add liquidity**. In order to add liquidity, deposit tokens with the function `deposit()`.
 
 4. **Swap Tokens**: For the user to swap his tokens use `swap()`.
 
