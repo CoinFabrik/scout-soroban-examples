@@ -1,14 +1,22 @@
 #![no_std]
-use soroban_sdk::{contract, contracterror, contractimpl, contracttype, symbol_short, token, xdr::ToXdr, Address, BytesN, Env, Symbol, Bytes}; 
+use soroban_sdk::{contract, contracterror, contractimpl, contracttype, symbol_short, token, Address, Env, Symbol}; 
 
 #[contracttype]
 pub struct PaymentChannelState{
-    sender: Address,
-    recipient: Address, 
-    expiration: Option<i128>, 
-    withdrawn: i128, 
-    close_duration: i128,
-    token: Address
+    sender: Address,            // The creator of the payment channel who wants to send funds. 
+    recipient: Address,         // The receiver of the deposited funds. 
+    expiration: Option<u64>,    // The timestamp corresponding to the date the channel is no longer valid. 
+    withdrawn: i128,            // The amount that has already been withdrawn by the recipient. 
+    token: Address,             // The token the deposit is being made in. 
+    allowance: i128,            // The maximum amount the recipient is allowed to withdraw. Sender can update this amount but all withdrawals will sum up to this number. 
+                                /* Example: 
+                                    1. first allowance: 1000 tokens 
+                                    2. user withdrawal: 1000 tokens 
+                                    3. sender updates allowance to 1700 tokens 
+                                    4. user second withdrawal will be of 700 because of previous withdrawal. 
+                                    5. user's final balance: 1700 tokens 
+                                */
+
 }
 
 #[contracterror]
@@ -26,14 +34,14 @@ pub struct PaymentChannel;
 #[contractimpl]
 impl PaymentChannel {
 
-    pub fn initialize(env: Env, sender: Address, recipient: Address, close_duration: i128, token: Address) -> PaymentChannelState {
+    pub fn initialize(env: Env, sender: Address, recipient: Address, token: Address, allowance: i128) -> PaymentChannelState {
         let new_payment_channel = PaymentChannelState {
             sender,
             recipient, 
             expiration: None,
             withdrawn: 0, 
-            close_duration,
-            token
+            token,
+            allowance
         };
 
         env.storage().instance().set(&PCSTATE, &new_payment_channel); 
@@ -44,44 +52,35 @@ impl PaymentChannel {
         env.storage().instance().get(&PCSTATE).unwrap()
     }
 
-    pub fn close(env: Env, amount: i128, signature: BytesN<64>) {
-        let state = Self::get_state(env.clone());
-
-        let sender = Self::get_sender_address(env.clone());
-        verify_signature(env.clone(), amount, signature, sender);
+    pub fn close(env: Env) {
+        let state = Self::get_state(env.clone()); 
         let recipient = Self::get_recipient_address(env.clone());
         recipient.require_auth();
         let token_client = token::Client::new(&env, &Self::get_state(env.clone()).token);
-        
-        assert!(amount > state.withdrawn); 
 
-        token_client.transfer(&env.current_contract_address(), &recipient, &(amount - state.withdrawn)); 
+        if state.allowance > state.withdrawn {
+            token_client.transfer(&env.current_contract_address(), &recipient, &(&state.allowance - state.withdrawn)); 
+        }
         let remaining_balance = token_client.balance(&env.current_contract_address()); 
         if remaining_balance > 0 {
             token_client.transfer(&env.current_contract_address(), &Self::get_sender_address(env), &remaining_balance); 
         }
     }
 
-    pub fn withdraw(env: Env, amount: i128, signature: BytesN<64>) {
+    pub fn withdraw(env: Env) {
         Self::get_recipient_address(env.clone()).require_auth();
-
-        let sender = Self::get_sender_address(env.clone());
-        verify_signature(env.clone(), amount, signature, sender);
-
         let mut state = Self::get_state(env.clone());
+        assert!(state.allowance > state.withdrawn); 
         let token_client = token::Client::new(&env, &state.token);
-
-        assert!(amount > state.withdrawn); 
-
-        let amount_to_withdraw = amount - state.withdrawn; 
+        let amount_to_withdraw = state.allowance - state.withdrawn; 
         state.withdrawn += amount_to_withdraw; 
         token_client.transfer(&env.current_contract_address(), &state.recipient, &amount_to_withdraw); 
         env.storage().instance().set(&PCSTATE, &state); 
     }
 
-    pub fn set_expiration(env: Env, timestamp: i128) {
+    pub fn set_expiration(env: Env, timestamp: u64) {
         Self::get_sender_address(env.clone()).require_auth(); 
-        let now = env.ledger().timestamp() as i128; 
+        let now = env.ledger().timestamp(); 
         assert!(timestamp > now); 
         let mut state = Self::get_state(env.clone()); 
         state.expiration = Some(timestamp); 
@@ -90,9 +89,10 @@ impl PaymentChannel {
 
     pub fn claim_timeout(env: Env) -> Result<(), PCError> {
         let state = Self::get_state(env.clone()); 
+        state.sender.require_auth();
         match state.expiration {
             Some(expiration) => {
-                let now = env.ledger().timestamp() as i128; 
+                let now = env.ledger().timestamp(); 
                 assert!(now > expiration); 
                 let token_client = token::Client::new(&env, &state.token);
                 let remaining_balance = token_client.balance(&env.current_contract_address()); 
@@ -105,6 +105,14 @@ impl PaymentChannel {
         }
     } 
 
+    pub fn modify_allowance(env: Env, allowance: i128) {
+        let mut state = Self::get_state(env.clone());
+        state.sender.require_auth();
+        assert!(allowance > state.allowance); 
+        state.allowance = allowance; 
+        env.storage().instance().set(&PCSTATE, &state);
+    }
+
     pub fn get_recipient_address(env: Env) -> Address {
         Self::get_state(env).recipient 
     }
@@ -114,19 +122,6 @@ impl PaymentChannel {
     }
 
     
-
-}
-
-fn verify_signature(env: Env, amount: i128, signature: BytesN<64>, sender_pubkey: Address) {
-    let mut contract_id_bytes = env.current_contract_address().to_xdr(&env); 
-    let amount_to_bytes = amount.to_xdr(&env);
-    contract_id_bytes.append(&amount_to_bytes);
-
-    let encodable_hash : Bytes= env.crypto().sha256(&contract_id_bytes).try_into().expect("to be bytes"); 
-   
-    let pub_key_bytes: BytesN<32> = sender_pubkey.to_xdr(&env).try_into().expect("bytes to have length 32");
-    // will panic if signature verification fails 
-    env.crypto().ed25519_verify(&pub_key_bytes, &encodable_hash, &signature); 
 
 }
 
