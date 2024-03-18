@@ -4,7 +4,7 @@ use super::*;
 
 mod storage_contract {
     soroban_sdk::contractimport!(
-        file = "../1storage/target/wasm32-unknown-unknown/release/storage_contract.wasm"
+        file = "../storage/target/wasm32-unknown-unknown/release/storage_contract.wasm"
     );
 }
 

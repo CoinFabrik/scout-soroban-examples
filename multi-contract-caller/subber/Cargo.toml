@@ -8,11 +8,11 @@ crate-type = ["cdylib"]
 
 [dependencies]
 soroban-sdk = "20.0.0"
-#storage-contract = { path = "../1storage" }
+#storage-contract = { path = "../storage" }
 
 [dev_dependencies]
 soroban-sdk = { version = "20.0.0", features = ["testutils"] }
-storage-contract = { path = "../1storage", features = ["testutils"] }
+storage-contract = { path = "../storage", features = ["testutils"] }
 
 [features]
 testutils = [
