@@ -4,7 +4,7 @@ use super::*;
 
 mod storage_contract {
     soroban_sdk::contractimport!(
-        file = "../1storage/target/wasm32-unknown-unknown/release/storage_contract.wasm"
+        file = "../storage/target/wasm32-unknown-unknown/release/storage_contract.wasm"
     );
 }
 
@@ -19,13 +19,13 @@ pub trait StorageInterface {
 
 mod adder_contract {
     soroban_sdk::contractimport!(
-        file = "../2adder/target/wasm32-unknown-unknown/release/adder_contract.wasm"
+        file = "../adder/target/wasm32-unknown-unknown/release/adder_contract.wasm"
     );
 }
 
 mod subber_contract {
     soroban_sdk::contractimport!(
-        file = "../3subber/target/wasm32-unknown-unknown/release/subber_contract.wasm"
+        file = "../subber/target/wasm32-unknown-unknown/release/subber_contract.wasm"
     );
 }
 

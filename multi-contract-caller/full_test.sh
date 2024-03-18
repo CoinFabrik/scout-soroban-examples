@@ -1,13 +1,13 @@
 #!/bin/sh
-cd 1storage
+cd storage
 soroban contract build
 cargo test
-cd ../2adder
+cd ../adder
 soroban contract build
 cargo test
-cd ../3subber
+cd ../subber
 soroban contract build
 cargo test
-cd ../4caller
+cd ../caller
 soroban contract build
 cargo test
