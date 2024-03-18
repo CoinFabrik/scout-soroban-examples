@@ -1,29 +1,29 @@
 #![no_std]
+
 use soroban_sdk::{contract, contractimpl, contracttype, symbol_short, token, Address, Env, Map, Symbol, Vec};
 
-type TransactionId = u32; 
 
 #[derive(Debug, Clone, PartialEq)]
 #[contracttype]
-pub struct ProposedTx {
-    pub token: Address, 
-    pub tx_id: TransactionId,
-    pub transfer_to: Address, 
-    pub transfer_amount: i128,
+pub struct ProposedTx {         // The proposed transaction to be executed
+    pub token: Address,         // Token to be transferred
+    pub tx_id: u32,             // Transaction ID
+    pub transfer_to: Address,   // The receiver of the transfer
+    pub transfer_amount: i128,  // The amount that will be sent 
+    pub executed: bool          // True if the transaction has already been executed
 }
 
 #[contracttype]
 #[derive(Debug)]
 pub struct MultisigState {
-    confirmations: Map<(TransactionId, Address), ()>, 
-    confirmation_count: Map<TransactionId, u32>, 
-    transactions: Map<TransactionId, ProposedTx>,
-    owners: Vec<Address>, 
-    required_signatures: u32,
-    next_tx_id: u32,
-    pending_additions: Map<Address, u32>, 
-    pending_removals: Map<Address, u32>, 
-    owner_modifications_conf: Map<(Address, Address, bool), ()>
+    confirmations: Map<(u32 /*tx_id*/, Address), ()>,                         // Keeps record of what owners have already voted a transaction. 
+    confirmation_count: Map<u32 /*tx_id*/, u32>,                              // Keeps record of how many confirmations a transaction has. 
+    transactions: Map<u32 /*tx_id*/, ProposedTx>,                             // Keeps record of transactions. 
+    owners: Vec<Address>,                                                     // The current owners of the multisig. 
+    required_signatures: u32,                                                 // The amount of needed signatures in order to execute a transaction. 
+    next_tx_id: u32,                                                          // Next transaction id. 
+    pending_modifications: Map<(Address, bool), u32>,                         // Keeps record of owner addition/removal proposals and votes. When key contians `true` it refers to an addition, when `false`, to a removal. Address -> owner to be removed or added / bool -> addition/removal / u32 -> amount of confirmations. 
+    owner_modifications_conf: Map<(Address, Address, bool), ()>               // Keeps record of what owners have voted an addition/removal. Address -> owner to be removed/added / Address -> owner who voted / bool -> addition/removal. 
 }
 
 const MULTISIGSTATE: Symbol = symbol_short!("MS_STATE");
@@ -42,63 +42,87 @@ impl Multisig {
             required_signatures,
             transactions: Map::new(&env),
             next_tx_id: 0,
-            pending_additions: Map::new(&env), 
-            pending_removals: Map::new(&env),
+            pending_modifications: Map::new(&env), 
             owner_modifications_conf: Map::new(&env)
 
         }; 
         env.storage().instance().set(&MULTISIGSTATE, &new_ms_state);
     }
 
-    pub fn approve_owner_addition(env: Env, owner: Address, caller:Address) {
-        assert!(owner != caller); 
+    pub fn approve_owner_addition(env: Env, new_owner: Address, caller:Address) {
+        
+        assert!(new_owner != caller); 
+        assert!(!Self::is_owner(env.clone(), new_owner.clone()));
         caller.require_auth();
         assert!(Self::is_owner(env.clone(), caller.clone()));
         let mut ms_state = Self::get_multisig_state(env.clone()); 
-        let mut conf_count = ms_state.pending_additions.get(owner.clone()).unwrap_or(0); 
+        let mut conf_count = ms_state.pending_modifications.get((new_owner.clone(), true)).unwrap_or(0); 
         conf_count += 1; 
-        if !ms_state.pending_additions.contains_key(owner.clone()) {
-            ms_state.pending_additions.set(owner.clone(), conf_count); 
-        }
+
+        assert!(!ms_state.owner_modifications_conf.contains_key((new_owner.clone(), caller.clone(), true)));
+        ms_state.owner_modifications_conf.set((new_owner.clone(), caller.clone(), true), ());
+        
+        ms_state.pending_modifications.set((new_owner.clone(),true), conf_count); 
+       
 
         if conf_count == ms_state.required_signatures {
-            Self::add_owner(env.clone(), owner.clone()); 
-            ms_state.pending_additions.remove(owner.clone()); 
+            ms_state = Self::add_owner(env.clone(), new_owner.clone()); 
+            ms_state.pending_modifications.remove((new_owner.clone(), true)); 
         }
 
         env.storage().instance().set(&MULTISIGSTATE, &ms_state); 
     }
+
+    fn add_owner(env: Env, new_owner: Address) -> MultisigState {
+        let mut ms_state = Self::get_multisig_state(env.clone());
+        ms_state.owners.push_back(new_owner.clone());
+
+        for (key, _) in ms_state.owner_modifications_conf.clone() {
+            if key.0 == new_owner.clone() && key.2 == true {
+                ms_state.owner_modifications_conf.remove(key);
+            }
+        }
+
+        ms_state
+    }
+
+    
 
     pub fn approve_owner_removal(env: Env, owner: Address, caller:Address) {
         assert!(owner != caller); 
+        assert!(Self::is_owner(env.clone(), owner.clone()));
         caller.require_auth();
         assert!(Self::is_owner(env.clone(), caller.clone()));
         let mut ms_state = Self::get_multisig_state(env.clone()); 
-        let mut conf_count = ms_state.pending_removals.get(owner.clone()).unwrap_or(0); 
+        let mut conf_count = ms_state.pending_modifications.get((owner.clone(), false)).unwrap_or(0); 
         conf_count += 1; 
-        if !ms_state.pending_removals.contains_key(owner.clone()) {
-            ms_state.pending_removals.set(owner.clone(), conf_count); 
-        }
+
+        assert!(!ms_state.owner_modifications_conf.contains_key((owner.clone(), caller.clone(), false))); //cannot vote twice
+        ms_state.owner_modifications_conf.set((owner.clone(), caller.clone(), false), ());
+        ms_state.pending_modifications.set((owner.clone(),false), conf_count); 
+        
 
         if conf_count == ms_state.required_signatures {
-            Self::remove_owner(env.clone(), owner.clone()); 
-            ms_state.pending_removals.remove(owner.clone()); 
+            ms_state = Self::remove_owner(env.clone(), owner.clone()); 
+            ms_state.pending_modifications.remove((owner.clone(), false)); 
         }
 
         env.storage().instance().set(&MULTISIGSTATE, &ms_state); 
     }
 
-    fn add_owner(env: Env, new_owner: Address) {
-        let mut ms_state = Self::get_multisig_state(env.clone());
-        ms_state.owners.push_back(new_owner);
-        env.storage().instance().set(&MULTISIGSTATE, &ms_state); 
-    }
-
-    fn remove_owner(env: Env, owner: Address) {
+    fn remove_owner(env: Env, owner: Address) -> MultisigState {
         let mut ms_state = Self::get_multisig_state(env.clone());
         let index = ms_state.owners.iter().position(|x| x == owner).unwrap() as u32; 
         ms_state.owners.remove(index);
-        env.storage().instance().set(&MULTISIGSTATE, &ms_state);
+
+        for (key, _) in ms_state.owner_modifications_conf.clone() {
+            if key.0 == owner.clone() && key.2 == false {
+                ms_state.owner_modifications_conf.remove(key);
+            }
+        }
+
+        ms_state
+        
     }
 
     pub fn submit_tx(env: Env, token: Address, to: Address, amount: i128, caller: Address)
@@ -112,13 +136,14 @@ impl Multisig {
             token, 
             tx_id,
             transfer_to: to, 
-            transfer_amount: amount
+            transfer_amount: amount,
+            executed: false
         }; 
         ms_state.transactions.set(tx_id, new_tx); 
         env.storage().instance().set(&MULTISIGSTATE, &ms_state);
     }
 
-    pub fn confirm_transaction(env: Env, tx_id: TransactionId, owner: Address) {
+    pub fn confirm_transaction(env: Env, tx_id: u32, owner: Address) {
         owner.require_auth(); 
         let mut ms_state = Self::get_multisig_state(env.clone()); 
         assert!(ms_state.owners.contains(owner.clone()));
@@ -132,13 +157,18 @@ impl Multisig {
         env.storage().instance().set(&MULTISIGSTATE, &ms_state);
     }
 
-    pub fn execute_transaction(env: Env, tx_id: TransactionId) {
-        let ms_state = Self::get_multisig_state(env.clone()); 
+    pub fn execute_transaction(env: Env, tx_id: u32) {
+        let mut ms_state = Self::get_multisig_state(env.clone()); 
         assert!(ms_state.confirmation_count.get(tx_id).unwrap() >= ms_state.required_signatures); 
-        let tx: ProposedTx = ms_state.transactions.get(tx_id).unwrap(); 
+        let mut tx: ProposedTx = ms_state.transactions.get(tx_id).unwrap(); 
+        assert!(!tx.executed);
 
         let token_client = token::Client::new(&env, &tx.token); 
         token_client.transfer(&env.current_contract_address(), &tx.transfer_to, &tx.transfer_amount); 
+        tx.executed = true; 
+
+        ms_state.transactions.set(tx_id, tx); 
+        env.storage().instance().set(&MULTISIGSTATE, &ms_state);
         
     }
 
@@ -148,7 +178,7 @@ impl Multisig {
     }
 
     pub fn get_multisig_state(env: Env) -> MultisigState {
-        env.storage().instance().get(&MULTISIGSTATE).unwrap() 
+        env.storage().instance().get(&MULTISIGSTATE).unwrap()
     }
    
 
@@ -156,3 +186,5 @@ impl Multisig {
 
 #[cfg(test)]
 mod test; 
+
+
