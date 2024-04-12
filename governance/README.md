@@ -4,6 +4,8 @@
 
 This folder contains a Soroban smart contract example for governance, where a member of a group can make a proposal and have the rest vote on it. It demonstrates starting, voting and closing a proposal, showcasing how to implement and interact with smart contracts on the Stellar network using Soroban.
 
+We include a `mock-contract` utilized by the `governance` smart contract for testing purposes.
+
 ## Contract Functions
 
 | Function Name    | Parameters                                                                                                                       | Return Type          | Description                                                                                                                  |
