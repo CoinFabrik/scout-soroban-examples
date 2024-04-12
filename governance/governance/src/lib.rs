@@ -2,7 +2,7 @@
 
 use soroban_sdk::{contracterror, contract, contractimpl, contracttype, symbol_short, Address, Env, Map, Symbol, Val, Vec}; 
 
-// add in order to test 
+// Uncomment this in order to test 
 mod mock_contract {
     soroban_sdk::contractimport!(
         file = "../mock-contract/target/wasm32-unknown-unknown/release/mock_contract.wasm"
