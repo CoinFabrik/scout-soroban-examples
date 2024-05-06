@@ -73,6 +73,9 @@ pub enum SwapError {
     CannotFulfillSwap = 9,
     SwapRejected = 10,
     InvalidAdmin = 11,
+    InsufficientInputBalance = 12,
+    CannotFulfillWithdraw = 13,
+    WithdrawRejected = 14,
 }
 
 mod token;
@@ -96,6 +99,14 @@ impl SwapContract {
     }
 
     fn sort_token_deposits(token_a: (Address, i128, i128), token_b: (Address, i128, i128)) -> ((Address, i128, i128), (Address, i128, i128)){
+        if token_a.0 < token_b.0{
+            (token_a, token_b)
+        }else{
+            (token_b, token_a)
+        }
+    }
+
+    fn sort_token_withdrawals(token_a: (Address, i128), token_b: (Address, i128)) -> ((Address, i128), (Address, i128)){
         if token_a.0 < token_b.0{
             (token_a, token_b)
         }else{
@@ -194,13 +205,91 @@ impl SwapContract {
         Ok(liquidity)
     }
 
+    pub fn withdraw(env: Env, from: Address, input_amount: i128, token_a: (Address, i128), token_b: (Address, i128), recipient: Address) -> Result<(i128, i128), SwapError>{
+        if input_amount < 1{
+            return Ok((0, 0));
+        }
+
+        from.require_auth();
+
+        let (mut token_greater, mut token_lesser) = SwapContract::sort_token_withdrawals(token_a.clone(), token_b.clone());
+
+        use soroban_sdk::token::Client;
+
+        let state: State = env.storage().instance()
+            .get(&DataKey::State(token_greater.0.clone(), token_lesser.0.clone()))
+            .ok_or(SwapError::SwapNotInitialized)?;
+        
+        let client_liq = Client::new(&env, &state.liq_token);
+        
+        if input_amount > input_amount.min(client_liq.balance(&from)){
+            return Err(SwapError::InsufficientInputBalance);
+        }
+
+        let mut client_greater = Client::new(&env, &token_greater.0);
+        let mut client_lesser = Client::new(&env, &token_lesser.0);
+
+        let mut balance_greater = client_greater.balance(&from);
+        let mut balance_lesser = client_lesser.balance(&from);
+    
+        if balance_lesser > balance_greater{
+            (
+                (token_greater, client_greater, balance_greater),
+                (token_lesser, client_lesser, balance_lesser),
+            ) = (
+                (token_lesser, client_lesser, balance_lesser),
+                (token_greater, client_greater, balance_greater),
+            );
+        }
+
+        use util::rational::{
+            safe_mul,
+            carrying_mul,
+            sqrt_u256,
+        };
+
+        //amount_lesser = sqrt(input_amount^2 * balance_lesser / balance_greater)
+        let amount_lesser = safe_mul(input_amount, balance_lesser, balance_greater)
+            .map_err(|_| SwapError::IntegerOverflow)?;
+        let amount_lesser = carrying_mul(amount_lesser.try_into().unwrap(), input_amount.try_into().unwrap());
+        let amount_lesser: i128 = sqrt_u256(amount_lesser)
+            .map_err(|_| SwapError::IntegerOverflow)?
+            .try_into()
+            .map_err(|_| SwapError::IntegerOverflow)?;
+
+        //amount_greater = amount_lesser * balance_greater / balance_lesser
+        let amount_greater = safe_mul(amount_lesser, balance_greater, balance_lesser).map_err(|_| SwapError::IntegerOverflow)?;
+
+        if amount_greater > balance_greater || amount_lesser > balance_lesser{
+            return Err(SwapError::CannotFulfillWithdraw);
+        }
+        if amount_greater < token_greater.1 || amount_lesser < token_lesser.1{
+            return Err(SwapError::WithdrawRejected);
+        }
+
+        let me = env.current_contract_address();
+
+        client_liq.burn(&from, &input_amount);
+        client_greater.transfer(&me, &recipient, &amount_greater);
+        client_lesser.transfer(&me, &recipient, &amount_lesser);
+
+        if token_greater == token_a{
+            Ok((amount_greater, amount_lesser))
+        }else{
+            assert!(token_lesser == token_a);
+            Ok((amount_lesser, amount_greater))
+        }
+    }
+
     pub fn swap(env: Env, from: Address, to: Address, token_a: Address, token_b: Address, input: i128, min_output: i128) -> Result<i128, SwapError>{
         let client_a = soroban_sdk::token::Client::new(&env, &token_a);
         let client_b = soroban_sdk::token::Client::new(&env, &token_b);
 
-        let input = input.min(client_a.balance(&from));
         if input < 1{
             return Ok(0);
+        }
+        if input > client_a.balance(&from){
+            return Err(SwapError::InsufficientInputBalance);
         }
 
         let (sorted_a, sorted_b) = SwapContract::sort_tokens(token_a.clone(), token_b.clone());
@@ -213,9 +302,6 @@ impl SwapContract {
 
         let output = curve.compute_swap(&env.current_contract_address(), &token_a, &token_b, &input);
 
-        if output < 0{
-            return Err(SwapError::CannotFulfillSwap);
-        }
         if output < min_output{
             return Err(SwapError::SwapRejected);
         }

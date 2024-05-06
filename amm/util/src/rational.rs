@@ -23,7 +23,7 @@ fn split(x: u128) -> (u128, u128){
     (hi, lo)
 }
 
-fn carrying_mul(l: u128, r: u128) -> (u128, u128){
+pub fn carrying_mul(l: u128, r: u128) -> (u128, u128){
     let (l_hi, l_lo) = split(l);
     let (r_hi, r_lo) = split(r);
     
@@ -48,6 +48,57 @@ fn carrying_mul(l: u128, r: u128) -> (u128, u128){
     let hi = (z3 << 64) | z2;
 
     (hi, lo)
+}
+
+fn lt(l: (u128, u128), r: (u128, u128)) -> bool{
+    if l.0 < r.0{
+        return true;
+    }
+    if l.0 > r.0{
+        return false;
+    }
+    l.1 < r.1
+}
+
+fn gt(l: (u128, u128), r: (u128, u128)) -> bool{
+    lt(r, l)
+}
+
+//Calculates floor(sqrt((x.0 << 128) + x.1))
+pub fn sqrt_u256(x: (u128, u128)) -> Result<u128, ()>{
+    if x.0 == 0 && x.1 < 2{
+        return Ok(x.1);
+    }
+    let mut lo: u128 = 1;
+    let mut hi = lo;
+    loop{
+        let test = lo + (hi - lo) / 2;
+        let sq = carrying_mul(test, test);
+        if lt(sq, x){
+            lo = test;
+            hi = hi.checked_mul(2).unwrap_or(u128::MAX);
+            continue;
+        }
+        if gt(sq, x){
+            hi = test;
+            break;
+        }
+        return Ok(test);
+    }
+    while hi > lo + 1{
+        let test = lo + (hi - lo) / 2;
+        let sq = carrying_mul(test, test);
+        if lt(sq, x){
+            lo = test;
+            continue;
+        }
+        if gt(sq, x){
+            hi = test;
+            continue;
+        }
+        return Ok(test);
+    }
+    Ok(lo)
 }
 
 fn div(dividend: (u128, u128), divisor: u128) -> Result<u128, bool>{
