@@ -59,6 +59,7 @@ pub enum GovError {
     InvalidProposalId = 7,
     QuorumNotReached = 8,
     GovernanceNotInitialized = 9,
+    WhitelistMustNotBeEmpty = 10,
 }
 
 #[contract]
@@ -77,6 +78,9 @@ impl Governance {
         let state = Self::get_state(env.clone());
         if state.is_ok() {
             return Err(GovError::GovernanceAlreadyInitialized);
+        }
+        if !(whitelist.len() > 0) {
+            return Err(GovError::WhitelistMustNotBeEmpty)
         }
         if !(quorum > 0 && quorum <= 100) {
             return Err(GovError::InvalidQuorumValue);
