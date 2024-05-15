@@ -111,13 +111,15 @@ For deploying Soroban smart contracts on a local node follow these steps:
 	soroban contract invoke --id $CONTRACT --source [name] --network standalone -- [function_name] --token $TOKEN
 	```
 
-### Security Review Process
+### Security Review
 
-All smart contracts featured in this repository will undergo an extensive security review conducted by senior auditors from [CoinFabrik](https://www.coinfabrik.com/) in April 2024. This  process ensures that each contract not only adheres to best practices in smart contract development but also is scrutinized for vulnerabilities, which are then corrected. A detailed security review report for each contract will be made publicly available, contributing to the transparency and educational value of this project.
+All smart contracts featured in this repository went through a security review conducted by a senior auditor from [CoinFabrik](https://www.coinfabrik.com/). This  process ensures that each contract not only adheres to best practices in smart contract development but also is scrutinized for vulnerabilities, which were then corrected.
+
+:point_right: Navigate to [this link](https://github.com/CoinFabrik/scout-soroban-examples/blob/main/security-review/README.md) to view the security review.
 
 ## About Soroban
 
-[Soroban](https://soroban-lang.github.io/) is a domain-specific language designed for smart contract development on [Stellar]((https://stellar.org/). It's built on top of Rust, leveraging its power while providing abstractions and tools tailored specifically for smart contract development. 
+[Soroban](https://soroban-lang.github.io/) is a domain-specific language designed for smart contract development on [Stellar](https://stellar.org/). It's built on top of Rust, leveraging its power while providing abstractions and tools tailored specifically for smart contract development. 
 
 Learn more about Soroban and its features at [Soroban Documentation](https://soroban.stellar.org/docs/).
 
