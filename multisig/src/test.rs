@@ -8,7 +8,7 @@ use token::Client as TokenClient;
 use token::StellarAssetClient as TokenAdminClient;
 
 #[test]
-fn test_initialize_a_multisig() {
+fn test_multisig() {
     let env = Env::default();
     env.mock_all_auths();
 
