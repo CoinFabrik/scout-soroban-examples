@@ -29,7 +29,7 @@ fn test_payment_channel_with_claim_timeout() {
 
     // INITIALIZE PAYMENT CHANNEL
     token_admin_client.mint(&sender, &5_000); // --> Now sender has balance
-    token.approve(&sender, &payment_channel.address, &5000, &300);
+                                              
 
     // Setting sequence
     env.ledger().with_mut(|info| {
