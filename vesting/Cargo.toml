@@ -8,6 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 soroban-sdk = "20.0.0"
+util = { path = "../amm/util" }
 
 [dev_dependencies]
 soroban-sdk = { version = "20.0.0", features = ["testutils"] }

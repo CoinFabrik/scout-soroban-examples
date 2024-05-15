@@ -99,12 +99,9 @@ impl VestingContract {
 
         //total is the amount the amount the beneficiary is owed at this time if
         //they never cashed out.
-        let total = state.locked
-            .checked_mul(now.into())
-            .ok_or(VestError::ArithmeticError)?
-            .checked_div(duration)
-            .ok_or(VestError::ArithmeticError)?;
-
+        let total = util::rational::safe_mul(state.locked, now.into(), duration)
+            .map_err(|_| VestError::ArithmeticError)?;
+        
         //Subtract from total the amount that the beneficiary has already cashed
         //out to obtain how much they're owed.
         Ok(total.checked_sub(state.paid_out).ok_or(VestError::ArithmeticError)?)

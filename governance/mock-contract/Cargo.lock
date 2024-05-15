@@ -638,7 +638,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "multisig"
+name = "mock-contract"
 version = "0.1.0"
 dependencies = [
  "soroban-sdk",

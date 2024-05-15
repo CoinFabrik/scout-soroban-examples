@@ -2,31 +2,24 @@
 use soroban_sdk::{
     contract,
     contractimpl,
-    contracterror,
     Address,
     Env,
 };
+use util::SwapCurveError;
 
 #[contract]
 pub struct ConstantProductSwapCurveContract;
-
-#[contracterror]
-#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-#[repr(u32)]
-pub enum SwapCurveError {
-    IntegerOverflow = 1,
-}
 
 pub fn curve_fn(balance_a: i128, balance_b: i128, input: i128) -> Result<i128, SwapCurveError>{
     let divisor = balance_a.checked_add(input).ok_or(SwapCurveError::IntegerOverflow)?;
     let delta = util::rational::safe_mul(balance_a, balance_b, divisor)
         .map_err(|_| SwapCurveError::IntegerOverflow)?;
     let output = balance_b - delta;
-    Ok(if output > balance_b{
-        -1
+    if output > balance_b{
+        Err(SwapCurveError::CannotFulfillSwap)
     }else{
-        output
-    })
+        Ok(output)
+    }
 }
 
 #[contractimpl]

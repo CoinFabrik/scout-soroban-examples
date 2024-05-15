@@ -111,7 +111,7 @@ For deploying Soroban smart contracts on a local node follow these steps:
 	soroban contract invoke --id $CONTRACT --source [name] --network standalone -- [function_name] --token $TOKEN
 	```
 
-### Security Review
+## Security Review
 
 All smart contracts featured in this repository went through a security review conducted by a senior auditor from [CoinFabrik](https://www.coinfabrik.com/). This  process ensures that each contract not only adheres to best practices in smart contract development but also is scrutinized for vulnerabilities, which were then corrected.
 
