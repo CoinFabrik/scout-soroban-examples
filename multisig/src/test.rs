@@ -8,7 +8,7 @@ use token::Client as TokenClient;
 use token::StellarAssetClient as TokenAdminClient;
 
 #[test]
-fn test_initialize_a_multisig() {
+fn test_multisig() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -175,4 +175,23 @@ fn test_initialize_a_multisig() {
     multisig_contract.approve_owner_removal(&owner3, &owner4);
 
     assert!(!multisig_contract.is_owner(&owner3));
+
+    // test change required signatures
+    multisig_contract.propose_required_signatures(&2, &owner1);
+    let mut req_sig_proposal = multisig_contract.get_req_sigs_modification(&0);
+    state = multisig_contract.get_multisig_state();
+    assert!(req_sig_proposal.active);
+    assert_eq!(req_sig_proposal.expiration, 100);
+    assert_eq!(req_sig_proposal.confirmation_count, 0);
+    assert_eq!(req_sig_proposal.new_requirement, 2);
+    assert_eq!(state.next_req_sigs_modification_id, 1);
+
+    multisig_contract.confirm_req_sigs_mod(&owner1);
+    multisig_contract.confirm_req_sigs_mod(&owner2);
+    multisig_contract.confirm_req_sigs_mod(&owner4);
+    req_sig_proposal = multisig_contract.get_req_sigs_modification(&0);
+    state = multisig_contract.get_multisig_state();
+    assert!(!req_sig_proposal.active);
+    assert_eq!(req_sig_proposal.confirmation_count, 3);
+    assert_eq!(state.required_signatures, 2);
 }

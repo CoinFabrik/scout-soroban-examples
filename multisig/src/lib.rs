@@ -20,7 +20,7 @@ pub struct ReqSigsConf {
     active: bool,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 #[contracttype]
 pub struct ChangeReqSigs {
     new_requirement: u32,
@@ -353,11 +353,21 @@ impl Multisig {
         Ok(ms_state.owners.contains(owner))
     }
 
-    pub fn propose_require_signatures(
+    pub fn propose_required_signatures(
         env: Env,
         required_signatures: u32,
+        caller: Address,
     ) -> Result<(), MultisigErr> {
+        caller.require_auth();
+        if !Self::is_owner(env.clone(), caller.clone())? {
+            return Err(MultisigErr::CallerIsNotOwner);
+        }
+
         let mut state = Self::get_multisig_state(env.clone())?;
+
+        if required_signatures > state.owners.len() {
+            return Err(MultisigErr::OwnersLessThanRequiredSignatures);
+        }
         let next_id = state.next_req_sigs_modification_id;
         let new_proposal = ChangeReqSigs {
             new_requirement: required_signatures,
@@ -402,10 +412,6 @@ impl Multisig {
             return Err(MultisigErr::ProposalIsNotActive);
         }
         if env.ledger().sequence() >= proposal.expiration {
-            proposal.active = false;
-            env.storage()
-                .instance()
-                .set(&DataKey::ChangeReqSigs(current_proposal_id), &proposal);
             return Err(MultisigErr::ProposalAlreadyExpired);
         }
         let mut confirmation = Self::get_req_sigs_mod_conf(env.clone(), owner.clone());
