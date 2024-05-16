@@ -1,155 +1,72 @@
 #!/bin/bash
 
+# Colors
+blue_color="\033[34m"
+green_color="\033[32m"
+red_color="\033[31m"
+reset_color="\033[0m"
+
+check_compilation() {
+    local patron="^error: could not compile"
+    local contract="$1"
+    if grep -q "$patron" test-all.txt; then
+        echo -e "${red_color}Could not build $contract ${reset_color}"
+    else
+        # Si no existe, imprimir "Se pudo compilar" en verde
+        echo -e "${green_color}Successfully built $contract ${reset_color}"
+    fi
+}
+
+check_cargo_test(){
+    local contract="$1"
+    echo -e "
+${blue_color}Compiling and running tests for $contract...${reset_color}
+"
+cargo test --manifest-path $contract/Cargo.toml >  test-all.txt 2>&1
+errorline=$(grep "error: could not compile"  test-all.txt)
+if [[ -n "$errorline" ]]; then
+    echo -e "${red_color}Error found in $contract. Could not compile${reset_color}" 
+    grep -v "^   Compiling" test-all.txt
+else
+    finish_msg=$(grep -xE '    Finished `test` profile.*'  test-all.txt | sed -e 's/^    //')
+    echo -e "${green_color}${finish_msg}${reset_color}"
+    grep -xE 'test test::test_.*'  test-all.txt
+fi
+}
+
 ## Soroban contract build to necessary dependencies 
-soroban contract build --manifest-path governance/mock-contract/Cargo.toml
-soroban contract build --manifest-path multi-contract-caller/storage/Cargo.toml
-soroban contract build --manifest-path multi-contract-caller/adder/Cargo.toml
-soroban contract build --manifest-path multi-contract-caller/subber/Cargo.toml
-soroban contract build --manifest-path amm/token/Cargo.toml
+echo -e "
+
+Soroban contract building necessary dependencies for testing...
+" 
+
+soroban contract build --manifest-path governance/mock-contract/Cargo.toml >  test-all.txt 2>&1
+check_compilation "governance/mock-contract"
+soroban contract build --manifest-path multi-contract-caller/storage/Cargo.toml >  test-all.txt 2>&1
+check_compilation "multi-contract-caller/storage"
+soroban contract build --manifest-path multi-contract-caller/adder/Cargo.toml >  test-all.txt 2>&1
+check_compilation "multi-contract-caller/adder"
+soroban contract build --manifest-path multi-contract-caller/subber/Cargo.toml >  test-all.txt 2>&1
+check_compilation "multi-contract-caller/subber"
+soroban contract build --manifest-path amm/token/Cargo.toml >  test-all.txt 2>&1
+check_compilation "amm/token"
+soroban contract build --manifest-path amm/cpamm/Cargo.toml >  test-all.txt 2>&1
+check_compilation "amm/cpamm"
+soroban contract build --manifest-path amm/csamm/Cargo.toml >  test-all.txt 2>&1
+check_compilation "amm/csamm"
 
 
-echo "Compiling multisig..." 
-cargo build --manifest-path multisig/Cargo.toml 2> compilacion.txt 
-errorline=$(grep "error: could not compile" compilacion.txt)
-if [[ -n "$errorline" ]]; then
-    echo "Error found in Multisig. Could not compile" 
-    cat compilacion.txt
-else
-    finished_line=$(grep "Finished \`dev\`" compilacion.txt)
-    if [[ -n "$finished_line" ]]; then
-        echo -e "\e[32m$finished_line\e[0m"
-    fi
-fi
-
-echo "Compiling amm..." 
-cargo build --manifest-path amm/Cargo.toml 2> compilacion.txt  
-errorline=$(grep "error: could not compile" compilacion.txt)
-if [[ -n "$errorline" ]]; then
-    echo "Error found in amm. Could not compile" 
-    cat compilacion.txt
-else
-    finished_line=$(grep "Finished \`dev\`" compilacion.txt)
-    if [[ -n "$finished_line" ]]; then
-        echo -e "\e[32m$finished_line\e[0m"
-    fi
-fi
-
-echo "Compiling governance..." 
-cargo build --manifest-path governance/governance/Cargo.toml 2> compilacion.txt
-errorline=$(grep "error: could not compile" compilacion.txt)
-if [[ -n "$errorline" ]]; then
-    echo "Error found in Governance. Could not compile" 
-    cat compilacion.txt
-else
-    finished_line=$(grep "Finished \`dev\`" compilacion.txt)
-    if [[ -n "$finished_line" ]]; then
-        echo -e "\e[32m$finished_line\e[0m"
-    fi
-fi
-
-echo "Compiling mock-contract for governance..." 
-cargo build --manifest-path governance/mock-contract/Cargo.toml 2> compilacion.txt
-errorline=$(grep "error: could not compile" compilacion.txt)
-if [[ -n "$errorline" ]]; then
-    echo "Error found in mock-contract. Could not compile" 
-    cat compilacion.txt
-else
-    finished_line=$(grep "Finished \`dev\`" compilacion.txt)
-    if [[ -n "$finished_line" ]]; then
-        echo -e "\e[32m$finished_line\e[0m"
-    fi
-fi
-
-echo "Compiling multi-contract-caller adder..." 
-cargo build --manifest-path multi-contract-caller/adder/Cargo.toml 2> compilacion.txt
-errorline=$(grep "error: could not compile" compilacion.txt)
-if [[ -n "$errorline" ]]; then
-    echo "Error found in Adder. Could not compile" 
-    cat compilacion.txt
-else
-    finished_line=$(grep "Finished \`dev\`" compilacion.txt)
-    if [[ -n "$finished_line" ]]; then
-        echo -e "\e[32m$finished_line\e[0m"
-    fi
-fi
-
-echo "Compiling multi-contract-caller caller..." 
-cargo build --manifest-path multi-contract-caller/caller/Cargo.toml 2> compilacion.txt
-errorline=$(grep "error: could not compile" compilacion.txt)
-if [[ -n "$errorline" ]]; then
-    echo "Error found in Caller. Could not compile" 
-    cat compilacion.txt
-else
-    finished_line=$(grep "Finished \`dev\`" compilacion.txt)
-    if [[ -n "$finished_line" ]]; then
-        echo -e "\e[32m$finished_line\e[0m"
-    fi
-fi
-
-echo "Compiling multi-contract-caller storage..." 
-cargo build --manifest-path multi-contract-caller/storage/Cargo.toml 2> compilacion.txt
-errorline=$(grep "error: could not compile" compilacion.txt)
-if [[ -n "$errorline" ]]; then
-    echo "Error found in Storage. Could not compile" 
-    cat compilacion.txt
-else
-    finished_line=$(grep "Finished \`dev\`" compilacion.txt)
-    if [[ -n "$finished_line" ]]; then
-        echo -e "\e[32m$finished_line\e[0m"
-    fi
-fi
-
-echo "Compiling multi-contract-caller subber..." 
-cargo build --manifest-path multi-contract-caller/subber/Cargo.toml 2> compilacion.txt
-errorline=$(grep "error: could not compile" compilacion.txt)
-if [[ -n "$errorline" ]]; then
-    echo "Error found in Subber. Could not compile" 
-    cat compilacion.txt
-else
-    finished_line=$(grep "Finished \`dev\`" compilacion.txt)
-    if [[ -n "$finished_line" ]]; then
-        echo -e "\e[32m$finished_line\e[0m"
-    fi
-fi
-
-echo "Compiling payment-channel..." 
-cargo build --manifest-path payment-channel/Cargo.toml 2> compilacion.txt
-errorline=$(grep "error: could not compile" compilacion.txt)
-if [[ -n "$errorline" ]]; then
-    echo "Error found in Payment Channel. Could not compile" 
-    cat compilacion.txt
-else
-    finished_line=$(grep "Finished \`dev\`" compilacion.txt)
-    if [[ -n "$finished_line" ]]; then
-        echo -e "\e[32m$finished_line\e[0m"
-    fi
-fi
-
-#echo "Compiling vesting..." 
-#cargo build --manifest-path vesting/Cargo.toml 2> compilacion.txt
-#errorline=$(grep "error: could not compile" compilacion.txt)
-#if [[ -n "$errorline" ]]; then
-#    echo "Error found in Vesting. Could not compile" 
-#    cat compilacion.txt
-#else
-#    finished_line=$(grep "Finished \`dev\`" compilacion.txt)
-#    if [[ -n "$finished_line" ]]; then
-#        echo -e "\e[32m$finished_line\e[0m"
-#    fi
-#fi
+check_cargo_test "multisig"
+check_cargo_test "amm"
+check_cargo_test "governance/governance"
+check_cargo_test "multi-contract-caller/adder"
+check_cargo_test "multi-contract-caller/caller"
+check_cargo_test "multi-contract-caller/storage"
+check_cargo_test "multi-contract-caller/subber"
+check_cargo_test "payment-channel"
+check_cargo_test "vesting"
 
 
 
-
-cargo test --manifest-path multisig/Cargo.toml
-cargo test --manifest-path amm/Cargo.toml
-cargo test --manifest-path governance/governance/Cargo.toml
-cargo test --manifest-path governance/mock-contract/Cargo.toml
-cargo test --manifest-path multi-contract-caller/adder/Cargo.toml
-cargo test --manifest-path multi-contract-caller/caller/Cargo.toml
-cargo test --manifest-path multi-contract-caller/storage/Cargo.toml
-cargo test --manifest-path multi-contract-caller/subber/Cargo.toml
-cargo test --manifest-path payment-channel/Cargo.toml
-# cargo test --manifest-path vesting/Cargo.toml
-
+rm  test-all.txt
 
