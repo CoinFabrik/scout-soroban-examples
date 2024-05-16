@@ -35,7 +35,7 @@ fn test_initialize_a_multisig() {
     let token_admin_client = TokenAdminClient::new(&env, &contract_address);
 
     // INITIALIZE MULTISIG
-    multisig_contract.initialize_multisig(&owners_vec, &3);
+    multisig_contract.initialize_multisig(&owners_vec, &3, &100);
 
     let mut state = multisig_contract.get_multisig_state();
 
