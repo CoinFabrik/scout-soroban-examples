@@ -32,6 +32,5 @@ _Take a look at the contract's test for a usage example._
 
 ## Security Review
 
-> :warning: **This Smart Contract is pending to be audited in April 2024.** Use at your own risk. Contributions and bug reports are welcome to enhance the security and functionality of this contract.
-
+:point_right: Navigate to [this link](https://github.com/CoinFabrik/scout-soroban-examples/blob/main/security-review/README.md) to view the security review.
 
