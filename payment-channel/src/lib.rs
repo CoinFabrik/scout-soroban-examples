@@ -59,7 +59,15 @@ impl PaymentChannel {
             token: token.clone(),
             allowance,
         };
+        sender.require_auth();
         let token_client = token::Client::new(&env, &token);
+
+        token_client.approve(
+            &sender,
+            &env.current_contract_address(),
+            &allowance,
+            &env.ledger().sequence(),
+        );
         token_client.transfer_from(
             &env.current_contract_address(),
             &sender,
@@ -169,6 +177,12 @@ impl PaymentChannel {
         let token_client = token::Client::new(&env, &Self::get_state(env.clone())?.token);
         state.sender.require_auth();
         assert!(allowance > state.allowance);
+        token_client.approve(
+            &state.sender,
+            &env.current_contract_address(),
+            &(allowance - state.allowance),
+            &env.ledger().sequence(),
+        );
         token_client.transfer_from(
             &env.current_contract_address(),
             &state.sender,

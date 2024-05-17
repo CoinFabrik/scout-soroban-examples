@@ -9,6 +9,24 @@ pub enum DataKey {
     Confirmation(u32, Address),
     MemberConfirmation(u32, Address),
     MemberModification(Address),
+    ChangeReqSigs(u32),
+    ReqSigsConf(Address),
+}
+
+#[derive(Default)]
+#[contracttype]
+pub struct ReqSigsConf {
+    change_req_sigs_id: u32,
+    active: bool,
+}
+
+#[derive(Default, Debug)]
+#[contracttype]
+pub struct ChangeReqSigs {
+    new_requirement: u32,
+    confirmation_count: u32,
+    active: bool,
+    expiration: u32,
 }
 
 #[derive(Default)]
@@ -47,10 +65,12 @@ pub struct ProposedTx {
 #[contracttype]
 #[derive(Debug)]
 pub struct MultisigState {
-    owners: Vec<Address>,        // The current owners of the multisig.
+    owners: Vec<Address>,               // The current owners of the multisig.
     required_signatures: u32, // The amount of needed signatures in order to execute a transaction.
     next_tx_id: u32,          // Next transaction id.
     member_modification_id: u32, // Next id for member modification proposal.
+    next_req_sigs_modification_id: u32, // Current id for required signatures modification proposal - There can only be one active proposal at the time.
+    req_sigs_mod_expiration: u32, // The amount of time a required signatures modification proposal will be valid for voted before being discarded. (Measured in ledger sequence number.)
 }
 
 #[contracterror]
@@ -66,6 +86,11 @@ pub enum MultisigErr {
     OwnerAlreadyConfirmedModification = 7,
     AdditionProposalOngoingForAddress = 8,
     ProposalAlreadyExecuted = 9,
+    InvalidIdForRequiredSigsModification = 10,
+    AlreadyOpenSignaturesRequirementModificationProposal = 11,
+    CallerIsNotOwner = 12,
+    ProposalIsNotActive = 13,
+    ProposalAlreadyExpired = 14,
 }
 
 #[contract]
@@ -78,6 +103,7 @@ impl Multisig {
         env: Env,
         owners: Vec<Address>,
         required_signatures: u32,
+        req_sigs_mod_expiration: u32,
     ) -> Result<(), MultisigErr> {
         let state = Self::get_multisig_state(env.clone());
         if state.is_ok() {
@@ -93,6 +119,8 @@ impl Multisig {
             required_signatures,
             next_tx_id: 0,
             member_modification_id: 0,
+            next_req_sigs_modification_id: 0,
+            req_sigs_mod_expiration,
         };
         env.storage()
             .instance()
@@ -325,6 +353,94 @@ impl Multisig {
         Ok(ms_state.owners.contains(owner))
     }
 
+    pub fn propose_required_signatures(
+        env: Env,
+        required_signatures: u32,
+        caller: Address,
+    ) -> Result<(), MultisigErr> {
+        caller.require_auth();
+        if !Self::is_owner(env.clone(), caller.clone())? {
+            return Err(MultisigErr::CallerIsNotOwner);
+        }
+
+        let mut state = Self::get_multisig_state(env.clone())?;
+
+        if required_signatures > state.owners.len() {
+            return Err(MultisigErr::OwnersLessThanRequiredSignatures);
+        }
+        let next_id = state.next_req_sigs_modification_id;
+        let new_proposal = ChangeReqSigs {
+            new_requirement: required_signatures,
+            confirmation_count: 0,
+            active: true,
+            expiration: env.ledger().sequence() + state.req_sigs_mod_expiration,
+        };
+
+        if next_id != 0 {
+            let mut current_prop = Self::get_req_sigs_modification(env.clone(), next_id - 1)?;
+            if current_prop.active {
+                if current_prop.expiration <= env.ledger().sequence() {
+                    current_prop.active = false;
+                    env.storage()
+                        .instance()
+                        .set(&DataKey::ChangeReqSigs(next_id - 1), &current_prop);
+                } else {
+                    return Err(MultisigErr::AlreadyOpenSignaturesRequirementModificationProposal);
+                }
+            }
+        }
+        env.storage()
+            .instance()
+            .set(&DataKey::ChangeReqSigs(next_id), &new_proposal);
+        state.next_req_sigs_modification_id += 1;
+        env.storage()
+            .instance()
+            .set(&DataKey::MultisigState, &state);
+        Ok(())
+    }
+
+    pub fn confirm_req_sigs_mod(env: Env, owner: Address) -> Result<(), MultisigErr> {
+        let mut state = Self::get_multisig_state(env.clone())?;
+        owner.require_auth();
+        if !Self::is_owner(env.clone(), owner.clone())? {
+            return Err(MultisigErr::CallerIsNotOwner);
+        }
+        let current_proposal_id =
+            Self::get_multisig_state(env.clone())?.next_req_sigs_modification_id - 1;
+        let mut proposal = Self::get_req_sigs_modification(env.clone(), current_proposal_id)?;
+        if !proposal.active {
+            return Err(MultisigErr::ProposalIsNotActive);
+        }
+        if env.ledger().sequence() >= proposal.expiration {
+            return Err(MultisigErr::ProposalAlreadyExpired);
+        }
+        let mut confirmation = Self::get_req_sigs_mod_conf(env.clone(), owner.clone());
+        if confirmation.change_req_sigs_id == current_proposal_id && confirmation.active {
+            return Err(MultisigErr::OwnerAlreadyConfirmedModification);
+        }
+        confirmation.change_req_sigs_id = current_proposal_id;
+        confirmation.active = true;
+
+        proposal.confirmation_count += 1;
+
+        if proposal.confirmation_count == state.required_signatures {
+            state.required_signatures = proposal.new_requirement;
+            env.storage()
+                .instance()
+                .set(&DataKey::MultisigState, &state);
+            proposal.active = false;
+        }
+
+        env.storage()
+            .instance()
+            .set(&DataKey::ChangeReqSigs(current_proposal_id), &proposal);
+        env.storage()
+            .instance()
+            .set(&DataKey::ReqSigsConf(owner.clone()), &confirmation);
+
+        Ok(())
+    }
+
     pub fn get_multisig_state(env: Env) -> Result<MultisigState, MultisigErr> {
         let state_op = env.storage().instance().get(&DataKey::MultisigState);
         if let Some(state) = state_op {
@@ -369,6 +485,22 @@ impl Multisig {
         env.storage()
             .instance()
             .get(&DataKey::MemberConfirmation(modification_id, owner))
+            .unwrap_or_default()
+    }
+
+    pub fn get_req_sigs_modification(env: Env, id: u32) -> Result<ChangeReqSigs, MultisigErr> {
+        let state_op = env.storage().instance().get(&DataKey::ChangeReqSigs(id));
+        if let Some(state) = state_op {
+            return Ok(state);
+        } else {
+            return Err(MultisigErr::InvalidIdForRequiredSigsModification);
+        }
+    }
+
+    pub fn get_req_sigs_mod_conf(env: Env, owner: Address) -> ReqSigsConf {
+        env.storage()
+            .instance()
+            .get(&DataKey::ReqSigsConf(owner))
             .unwrap_or_default()
     }
 }
