@@ -46,7 +46,7 @@ fn create_contract<'a>(e: &Env) -> CallerContractClient<'a> {
 }
 
 #[test]
-fn test_happy_path(){
+fn test_happy_path() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -59,7 +59,7 @@ fn test_happy_path(){
     let result = caller.variable_do_it(&42);
     assert_eq!(result, storage.get());
     assert_eq!(result, 42);
-    
+
     let result = caller.variable_do_it(&41);
     assert_eq!(result, storage.get());
     assert_eq!(result, 83);
@@ -79,7 +79,7 @@ fn test_happy_path(){
     let result = caller.variable_do_it(&0x7FFFFFFF_FFFFFFFF_i64);
     assert_eq!(result, storage.get());
     assert_eq!(result, 0x7FFFFFFF_FFFFFFFF_i64);
-    
+
     let result = caller.variable_do_it(&1);
     assert_eq!(result, storage.get());
     assert_eq!(result, 0x7FFFFFFF_FFFFFFFF_i64);
@@ -87,7 +87,7 @@ fn test_happy_path(){
 
 #[test]
 #[should_panic]
-fn test_double_init(){
+fn test_double_init() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -102,7 +102,7 @@ fn test_double_init(){
 
 #[test]
 #[should_panic]
-fn test_uninit2(){
+fn test_uninit2() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -113,7 +113,7 @@ fn test_uninit2(){
 
 #[test]
 #[should_panic]
-fn test_uninit1(){
+fn test_uninit1() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -123,7 +123,7 @@ fn test_uninit1(){
 }
 
 #[test]
-fn test_inverted_initialization(){
+fn test_inverted_initialization() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -136,7 +136,7 @@ fn test_inverted_initialization(){
     let result = caller.variable_do_it(&42);
     assert_eq!(result, storage.get());
     assert_eq!(result, -42);
-    
+
     let result = caller.variable_do_it(&41);
     assert_eq!(result, storage.get());
     assert_eq!(result, -83);
@@ -156,9 +156,8 @@ fn test_inverted_initialization(){
     let result = caller.variable_do_it(&0x7FFFFFFF_FFFFFFFF_i64);
     assert_eq!(result, storage.get());
     assert_eq!(result, -0x80000000_00000000_i64);
-    
+
     let result = caller.variable_do_it(&1);
     assert_eq!(result, storage.get());
     assert_eq!(result, -0x80000000_00000000_i64);
 }
-
