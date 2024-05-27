@@ -5,12 +5,12 @@ use soroban_sdk::{
 
 #[contracttype]
 pub struct PaymentChannelState {
-    sender: Address,    // The creator of the payment channel who wants to send funds.
-    recipient: Address, // The receiver of the deposited funds.
-    expiration: Option<u32>, // The sequence corresponding to the date the channel is no longer valid.
-    withdrawn: i128,         // The amount that has already been withdrawn by the recipient.
-    token: Address,          // The token the deposit is being made in.
-    allowance: i128, // The maximum amount the recipient is allowed to withdraw. Sender can update this amount but all withdrawals will sum up to this number.
+    pub sender: Address,    // The creator of the payment channel who wants to send funds.
+    pub recipient: Address, // The receiver of the deposited funds.
+    pub expiration: Option<u32>, // The sequence corresponding to the date the channel is no longer valid.
+    pub withdrawn: i128,         // The amount that has already been withdrawn by the recipient.
+    pub token: Address,          // The token the deposit is being made in.
+    pub allowance: i128, // The maximum amount the recipient is allowed to withdraw. Sender can update this amount but all withdrawals will sum up to this number.
                      /* Example:
                          1. first allowance: 1000 tokens
                          2. user withdrawal: 1000 tokens
