@@ -1,0 +1,23 @@
+name: scout-workflow
+on: [push]
+
+jobs:
+  scout-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+      repository-projects: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: do scout
+        uses: coinfabrik/scout-actions@v2.4
+        with:
+          target: 'payment-channel/'
+          markdown_output: "true"
+
+      - uses: mshick/add-pr-comment@v2.8.2
+        with:
+          message-path:  ${{ github.workspace }}/report.md
