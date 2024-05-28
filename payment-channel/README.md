@@ -4,6 +4,9 @@
 
 This folder contains a Soroban smart contract example for a payment channel. A payment channel is a smart contract that acts as a mediator between a person who wants to make a payment and another who has to receive that payment, in order to provide more security when carrying out the transaction.
 
+
+Some update. Some new update. Some other new update. Some other newer update. Some final update.
+
 ## Contract Functions
 
 | Function Name            | Parameters                                                                                                               | Return Type                | Description                                                                                              |
